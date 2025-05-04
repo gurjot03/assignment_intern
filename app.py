@@ -9,7 +9,7 @@ def main():
 
     st.title("Testing Solutions Search App")
     
-    mongodb_uri = 'mongodb+srv://ripsjaw:ripsjaw123@cluster0.1opiorp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
+    mongodb_uri = st.secrets['MONGODB_URI]
     
     search_system = AssessmentSearchSystem(mongodb_uri)
 
