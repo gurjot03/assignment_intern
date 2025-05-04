@@ -9,7 +9,7 @@ def main():
 
     st.title("Testing Solutions Search App")
     
-    mongodb_uri = st.secrets['MONGODB_URI]
+    mongodb_uri = st.secrets['MONGODB_URI']
     
     search_system = AssessmentSearchSystem(mongodb_uri)
 
