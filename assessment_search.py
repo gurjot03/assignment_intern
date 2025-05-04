@@ -14,7 +14,7 @@ class AssessmentSearchSystem:
         self.db = self.client['assessment_search']
         self.collection = self.db[collection_name]
         
-        api_key = os.getenv('GEMINI_API_KEY')
+        api_key = st.secrets['GEMINI_API_KEY']
         genai.configure(api_key=api_key)
         self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
         self.gemini_model = genai.GenerativeModel('gemini-1.5-pro')
