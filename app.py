@@ -1,5 +1,5 @@
 import streamlit as st
-from search_system.assessment_search import AssessmentSearchSystem
+from assessment_search import AssessmentSearchSystem
 import os
 from dotenv import load_dotenv
 
