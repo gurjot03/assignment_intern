@@ -6,6 +6,8 @@ import google.generativeai as genai
 from sentence_transformers import SentenceTransformer
 import json
 import re
+from dotenv import load_dotenv
+load_dotenv()
 
 # Use secrets from Streamlit
 MONGODB_URI = os.getenv("MONGODB_URI")
