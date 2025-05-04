@@ -9,9 +9,8 @@ import re
 from dotenv import load_dotenv
 load_dotenv()
 
-# Use secrets from Streamlit
-MONGODB_URI = os.getenv("MONGODB_URI")
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+MONGODB_URI = st.secrets["MONGODB_URI"]
+GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
 
 class AssessmentSearchSystem:
     def __init__(self, mongodb_uri, gemini_api_key=None, collection_name="tests"):
