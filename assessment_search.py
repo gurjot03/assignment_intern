@@ -19,7 +19,7 @@ class AssessmentSearchSystem:
         api_key = GEMINI_KEY
         genai.configure(api_key=api_key)
         self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
-        self.gemini_model = genai.GenerativeModel('gemini-1.5-pro')
+        self.gemini_model = genai.GenerativeModel('gemini-2.0-flash')
     
     def create_document_text(self, row):
         document_text = f"""
@@ -197,7 +197,7 @@ class AssessmentSearchSystem:
         all_results = []
         
         base_refined = self.refine_query(query)
-        time.sleep(15)
+        time.sleep(5)
         print("-----")
         
         import re
@@ -225,7 +225,7 @@ class AssessmentSearchSystem:
             results = self.search(skill_query, limit_per_skill)
             all_results.extend(results)
             print("-----")
-            time.sleep(15)
+            time.sleep(5)
 
 
         unique_results = {result['name']: result for result in all_results}.values()
