@@ -8,13 +8,15 @@ import streamlit as st
 
 load_dotenv()
 
+GEMINI_KEY = st.secrets['GEMINI_API_KEY']
+
 class AssessmentSearchSystem:
     def __init__(self, mongodb_uri, gemini_api_key=None, collection_name="tests"):
         self.client = MongoClient(mongodb_uri)
         self.db = self.client['assessment_search']
         self.collection = self.db[collection_name]
         
-        api_key = st.secrets['GEMINI_API_KEY']
+        api_key = GEMINI_KEY
         genai.configure(api_key=api_key)
         self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
         self.gemini_model = genai.GenerativeModel('gemini-2.0-flash-001')
