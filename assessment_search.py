@@ -11,7 +11,7 @@ load_dotenv()
 GEMINI_KEY = st.secrets['GEMINI_API_KEY']
 
 class AssessmentSearchSystem:
-    def __init__(self, mongodb_uri, gemini_api_key=None, collection_name="tests"):
+    def __init__(self, mongodb_uri, collection_name="tests"):
         self.client = MongoClient(mongodb_uri)
         self.db = self.client['assessment_search']
         self.collection = self.db[collection_name]
@@ -47,13 +47,11 @@ class AssessmentSearchSystem:
         The database contains records with these fields:
         - Name: Testing solution names
         - Description: Detailed description of the test
-        - Test Type: Categories like 'Ability & Aptitude','Biodata & Situational Judgement','Competencies','Development & 360','Assessment Exercises','Knowledge & Skills','Personality & Behavior','Simulations'
+        - Test Type: Categories to choose from 'Ability & Aptitude','Biodata & Situational Judgement','Competencies','Development & 360','Assessment Exercises','Knowledge & Skills','Personality & Behavior','Simulations'
         - Job Levels: Target job levels (Entry-level, Mid-Professional, Manager, etc.)
         - Languages: Available languages
-        - Assessment Length: Duration of the test ,if nothing is mentioned dont use this field. 
-            If query like about an hour then assessment length should be <=60
-            If query like 30-40 mins then assessment length should be 30-40
-            If query like can be completed in 40 minutes then assessment length should be <=40
+        - Assessment Length: Duration of the test ,if nothing is mentioned dont use this field.
+            If query like about an hour then assessment length should be <=60. If query like 30-40 mins then assessment length should be 30-40.
         
         Always include description of the assessment in the refined query.
         The spoken languages in the query should be kept in the Languages field.
@@ -76,10 +74,21 @@ class AssessmentSearchSystem:
         refined_query = response.text.strip()
         return refined_query
     
+    def extract_skills(self, query):
+        prompt = f"""
+        From the following query, extract a list of only at most 7 essential and distinct skills or requirements:
+        {query}
+        Return only the skills as a comma-separated list, without any additional text or explanation.
+        """
+        response = self.gemini_model.generate_content(prompt)
+        skills = [skill.strip() for skill in response.text.split(',')]
+        return skills
+
     def process_csv_and_create_embeddings(self, csv_file):
         df = pd.read_csv(csv_file)
         print(f"Processing {len(df)} records from {csv_file}")
         for index, row in df.iterrows():
+
             document_text = self.create_document_text(row)
             
             embedding = self.generate_embedding(document_text)
@@ -181,3 +190,45 @@ class AssessmentSearchSystem:
         except Exception as e:
             print(f"Error during search: {e}")
             return []
+
+    def search_multiple_skills(self, query, limit_per_skill=3, final_limit=10):
+        skills = self.extract_skills(query)
+        print(skills)
+        all_results = []
+        
+        base_refined = self.refine_query(query)
+        time.sleep(30)
+        print("-----")
+        
+        import re
+        length_pattern = r'Assessment Length:\s*(<=|>=|)(\d+)(?:-(\d+)|)'
+        length_match = re.search(length_pattern, base_refined)
+        
+        length_requirement = ""
+        if length_match:
+            operator = length_match.group(1)
+            first_num = length_match.group(2)
+            second_num = length_match.group(3)
+            
+            if operator:
+                length_requirement = f"\nAssessment Length: {operator}{first_num}"
+            elif second_num:
+                length_requirement = f"\nAssessment Length: <={second_num}"
+            else:
+                length_requirement = f"\nAssessment Length: {first_num}-{second_num}"
+        
+        for skill in skills:
+            skill_query = f"""
+            Looking for assessment focused on {skill}.
+            Description: Tests that evaluate {skill} capabilities.{length_requirement}
+            """
+            results = self.search(skill_query, limit_per_skill)
+            all_results.extend(results)
+            print("-----")
+            time.sleep(20)
+
+
+        unique_results = {result['name']: result for result in all_results}.values()
+        
+        sorted_results = sorted(unique_results, key=lambda x: x.get('score', 0), reverse=True)
+        return sorted_results[:final_limit]
