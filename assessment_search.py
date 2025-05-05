@@ -5,6 +5,7 @@ from sentence_transformers import SentenceTransformer
 import google.generativeai as genai
 from dotenv import load_dotenv
 import streamlit as st
+import time
 
 load_dotenv()
 
