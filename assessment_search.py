@@ -19,7 +19,7 @@ class AssessmentSearchSystem:
         api_key = GEMINI_KEY
         genai.configure(api_key=api_key)
         self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
-        self.gemini_model = genai.GenerativeModel('gemini-2.0-flash-001')
+        self.gemini_model = genai.GenerativeModel('gemini-1.5-pro')
     
     def create_document_text(self, row):
         document_text = f"""
