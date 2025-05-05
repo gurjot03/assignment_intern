@@ -16,7 +16,7 @@ def main():
     if st.button("Search"):
         if query:
             search_system = AssessmentSearchSystem(mongodb_uri)
-            results = search_system.search(query, 10)
+            results = search_system.search_multiple_skills(query, 10)
             if results:
                 st.subheader("Search Results:")
                 for i, result in enumerate(results):
