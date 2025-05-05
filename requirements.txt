@@ -5,3 +5,4 @@ pymongo
 python-dotenv
 sentence-transformers
 google-generativeai
+hf_xet
