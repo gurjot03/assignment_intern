@@ -5,18 +5,17 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+mongodb_uri = st.secrets['MONGODB_URI']
+
 def main():
 
     st.title("Testing Solutions Search App")
-    
-    mongodb_uri = st.secrets['MONGODB_URI']
-    
-    search_system = AssessmentSearchSystem(mongodb_uri)
 
     query = st.text_input("Enter your query:")
     
     if st.button("Search"):
         if query:
+            search_system = AssessmentSearchSystem(mongodb_uri)
             results = search_system.search(query, 10)
             if results:
                 st.subheader("Search Results:")
