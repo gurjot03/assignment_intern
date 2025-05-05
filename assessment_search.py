@@ -76,7 +76,7 @@ class AssessmentSearchSystem:
     
     def extract_skills(self, query):
         prompt = f"""
-        From the following query, extract a list of only at most 7 essential and distinct skills or requirements:
+        From the following query, extract a list of only at most 7 essential and distinct skills:
         {query}
         Return only the skills as a comma-separated list, without any additional text or explanation.
         """
@@ -197,7 +197,7 @@ class AssessmentSearchSystem:
         all_results = []
         
         base_refined = self.refine_query(query)
-        time.sleep(30)
+        time.sleep(15)
         print("-----")
         
         import re
@@ -225,7 +225,7 @@ class AssessmentSearchSystem:
             results = self.search(skill_query, limit_per_skill)
             all_results.extend(results)
             print("-----")
-            time.sleep(20)
+            time.sleep(15)
 
 
         unique_results = {result['name']: result for result in all_results}.values()
